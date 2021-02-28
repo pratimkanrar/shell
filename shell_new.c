@@ -177,7 +177,7 @@ bool defCommand(char* line, char** parsedArgs)
 
 void run(char** parsedArgs)
 {
-  if(fork()==0)
+  if(!fork())
   {
     if(execvp(parsedArgs[0], parsedArgs)<0)
     {
