@@ -9,6 +9,13 @@
 
 #define MAXLINE 1024
 #define clear() printf("\033[H\033[J")
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 typedef enum Bool {true = 1, false = 0} bool;
 
@@ -51,7 +58,7 @@ void printShell()
   char* username = getenv("USER");
   char pwd[100];
   getcwd(pwd, sizeof(pwd));
-  printf("%s@shell:~%s", username, pwd);
+  printf(ANSI_COLOR_RED"%s@shell"ANSI_COLOR_RESET ANSI_COLOR_GREEN":"ANSI_COLOR_RESET ANSI_COLOR_BLUE"~%s"ANSI_COLOR_RESET, username, pwd);
 }
 
 bool input(char* str)
