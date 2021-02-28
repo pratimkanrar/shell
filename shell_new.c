@@ -24,9 +24,9 @@ bool input(char*);
 int parseInput(char*, char**, char**);
 int parsePipe(char*, char**);
 void parseWords(char*, char**);
-bool defCommand(char**);
-void run(char**, char**);
-void runWithPipe(char**, char**, char**);
+bool defCommand(char*, char**);
+void run(char**);
+void runWithPipe(char**, char**);
 
 int main(int argc, char* argv[], char* envp[])
 {
@@ -42,11 +42,11 @@ int main(int argc, char* argv[], char* envp[])
       type = parseInput(inputLine, parsedArgs, parsedPipes);
       if(type==1)
       {
-        run(parsedArgs, envp);
+        run(parsedArgs);
       }
       if(type==2)
       {
-        runWithPipe(parsedArgs, parsedPipes, envp);
+        runWithPipe(parsedArgs, parsedPipes);
       }
     }
   }
@@ -91,7 +91,7 @@ int parseInput(char* line, char** parsedArgs, char** parsedPipes)
   {
     parseWords(line, parsedArgs);
   }
-  if(defCommand(parsedArgs))
+  if(defCommand(line, parsedArgs))
   {
     return 0;
   }
@@ -132,10 +132,11 @@ void parseWords(char* line, char** words)
   }
 }
 
-bool defCommand(char** parsedArgs)
+bool defCommand(char* line, char** parsedArgs)
 {
   int i, choice = 0;
   char* list[4];
+  char dir[MAXLINE] = {'\0'};
   list[0] = "exit";
   list[1] = "cd";
   list[2] = "help";
@@ -154,7 +155,13 @@ bool defCommand(char** parsedArgs)
         printf("\nGoodbye :)\n");
         exit(0);
       case 2:
-        chdir(parsedArgs[1]);
+        strcpy(dir, parsedArgs[1]);
+        for(int i=2; parsedArgs[i]!=NULL; ++i)
+        {
+          strcat(dir, " ");
+          strcat(dir, parsedArgs[i]);
+        }
+        chdir(dir);
         return true;
       case 3:
         printf("version 2.0.0\nCreated by Blaze_Phoenix\n");
@@ -168,18 +175,13 @@ bool defCommand(char** parsedArgs)
     return false;
 }
 
-void run(char** parsedArgs, char** envp)
+void run(char** parsedArgs)
 {
   if(fork()==0)
   {
-    if(execve(parsedArgs[0], parsedArgs, envp)<0)
+    if(execvp(parsedArgs[0], parsedArgs)<0)
     {
-      char pref[50] = {'/', 'b', 'i', 'n', '/'};
-      strcat(pref, parsedArgs[0]);
-      if(execve(pref, parsedArgs, envp)<0)
-      {
-        printf("Command not found\n");
-      }
+      printf("Command not found\n");
     }
     exit(0);
   }
@@ -189,7 +191,7 @@ void run(char** parsedArgs, char** envp)
   }
 }
 
-void runWithPipe(char** cmd1, char** cmd2, char** envp)
+void runWithPipe(char** cmd1, char** cmd2)
 {
   if(!fork())
   {
@@ -200,14 +202,9 @@ void runWithPipe(char** cmd1, char** cmd2, char** envp)
       close(1);
       dup(pipes[1]);
       close(pipes[0]);
-      if(execve(cmd1[0], cmd1, envp)<0)
+      if(execvp(cmd1[0], cmd1)<0)
       {
-        char pref[50] = {'/', 'b', 'i', 'n', '/'};
-        strcat(pref, cmd1[0]);
-        if(execve(pref, cmd1, envp)<0)
-        {
-          printf("Command not found\n");
-        }
+        printf("Command not found\n");
       }
     }
     else
@@ -215,14 +212,9 @@ void runWithPipe(char** cmd1, char** cmd2, char** envp)
       close(0);
       dup(pipes[0]);
       close(pipes[1]);
-      if(execve(cmd2[0], cmd2, envp)<0)
+      if(execvp(cmd2[0], cmd2)<0)
       {
-        char pref[50] = {'/', 'b', 'i', 'n', '/'};
-        strcat(pref, cmd2[0]);
-        if(execve(pref, cmd2, envp)<0)
-        {
-          printf("Command not found\n");
-        }
+        printf("Command not found\n");
       }
     }
   }
