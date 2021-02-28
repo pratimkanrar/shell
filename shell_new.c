@@ -150,29 +150,29 @@ bool defCommand(char* line, char** parsedArgs)
     }
   }
   switch(choice)
-    {
-      case 1:
-        printf("\nGoodbye :)\n");
-        exit(0);
-      case 2:
-        strcpy(dir, parsedArgs[1]);
-        for(int i=2; parsedArgs[i]!=NULL; ++i)
-        {
-          strcat(dir, " ");
-          strcat(dir, parsedArgs[i]);
-        }
-        chdir(dir);
-        return true;
-      case 3:
-        printf("version 2.0.0\nCreated by Blaze_Phoenix\n");
-        return true;
-      case 4:
-        clear();
-        return true;
-      default:
-        break;
-    }
-    return false;
+  {
+    case 1:
+      printf("\nGoodbye :)\n");
+      exit(0);
+    case 2:
+      strcpy(dir, parsedArgs[1]);
+      for(int i=2; parsedArgs[i]!=NULL; ++i)
+      {
+        strcat(dir, " ");
+        strcat(dir, parsedArgs[i]);
+      }
+      chdir(dir);
+      return true;
+    case 3:
+      printf("version 2.0.0\nCreated by Blaze_Phoenix\n");
+      return true;
+    case 4:
+      clear();
+      return true;
+    default:
+      break;
+  }
+  return false;
 }
 
 void run(char** parsedArgs)
