@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
 
 #define MAXLINE 1024
 #define clear() printf("\033[H\033[J")
@@ -19,6 +20,7 @@
 
 typedef enum Bool {true = 1, false = 0} bool;
 
+void shell();
 void printShell();
 bool input(char*);
 int parseInput(char*, char**, char**);
@@ -27,10 +29,18 @@ void parseWords(char*, char**);
 bool defCommand(char*, char**);
 void run(char**);
 void runWithPipe(char**, char**);
+void sigintHandler(int);
 
 int main(int argc, char* argv[], char* envp[])
 {
+  signal(SIGINT, sigintHandler);
   clear();
+  shell();
+  return 0;
+}
+
+void shell()
+{
   char inputLine[MAXLINE];
   char *parsedArgs[MAXLINE], *parsedPipes[MAXLINE];
   int type = 0;
@@ -50,7 +60,6 @@ int main(int argc, char* argv[], char* envp[])
       }
     }
   }
-  return 0;
 }
 
 void printShell()
@@ -164,7 +173,7 @@ bool defCommand(char* line, char** parsedArgs)
       chdir(dir);
       return true;
     case 3:
-      printf("version 2.0.0\nCreated by Blaze_Phoenix\n");
+      printf("version 2.0.0\nCreated by Blaze_Phoenix\nUse the \"exit\" command to close the shell\n");
       return true;
     case 4:
       clear();
@@ -222,4 +231,10 @@ void runWithPipe(char** cmd1, char** cmd2)
   {
     wait(NULL);
   }
+}
+
+void sigintHandler(int signum)
+{
+  puts("\n");
+  shell();
 }
