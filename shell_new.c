@@ -235,6 +235,5 @@ void runWithPipe(char** cmd1, char** cmd2)
 
 void sigintHandler(int signum)
 {
-  puts("\n");
   shell();
 }
